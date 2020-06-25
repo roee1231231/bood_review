@@ -1,0 +1,28 @@
+body {
+  text-align: center;
+  background-color: #deca90;
+  font-family: "david" sans-serif;
+}
+
+#header_title {
+  background-image: #deca90;
+  text-weight: bold;
+}
+
+.error {
+  color: red;
+}
+
+#navbar {
+  text-align: left;
+  background-image: linear-gradient(#c2a146, #deca90);
+}
+#navbar .dropdown-menu {
+  background-color: #deca90;
+  opacity: 0.9;
+}
+#navbar .dropdown-menu a:hover {
+  background-color: white;
+}
+
+/*# sourceMappingURL=style.css.map */

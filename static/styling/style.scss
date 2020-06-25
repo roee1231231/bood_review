@@ -1,0 +1,31 @@
+$dark_brown: #c2a146;
+$light_brown: #deca90;
+$gradient_brown: linear-gradient($dark_brown, $light_brown);
+
+body {
+	text-align: center;
+	background-color: $light_brown;
+    font-family: "david" sans-serif;
+}
+
+#header_title {
+	background-image: $light_brown;
+	text-weight: bold;
+}
+
+.error {
+    color: red;
+}
+
+#navbar {
+    text-align: left;
+    background-image: $gradient_brown;
+    .dropdown-menu {
+        background-color: $light_brown;
+        opacity: 0.9;
+        a:hover {
+            background-color: white;
+        }
+    }
+}
+

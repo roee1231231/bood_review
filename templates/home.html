@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title_header %}
+    {% if message %}
+        {{ message }}
+    {% else %}
+        Welcome {{ name }}!
+    {% endif %}
+{% endblock %}
+{% block content %}hey{% endblock %}

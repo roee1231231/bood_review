@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Register{% endblock %}
+{% block title_header %}Register below to enjoy content!{% endblock %}
+{% block content %}
+    <form action="/register" method="post" name="register">
+        <div class="row">
+            <p>Name:
+            <br><input type="text" name="name" placeholder="Name">
+            <br>Last name:
+            <br><input type="text" name="last_name" placeholder="Last name">
+            <br>Email:
+            <br><input type="email" name="email" placeholder="email">
+            {{ email_avail|safe }}
+            <br>Username:
+            <br><input type="text" name="username" placeholder="username">
+            {{ user_avail|safe }}
+            <br>Password:
+            <br><input type="password" name="password">
+            {{ pass_avail|safe }}
+            <br><input type="submit" value="submit">
+        </div>
+    </form>
+{% endblock %}

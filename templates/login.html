@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Login page{% endblock %}
+{% block title_header %}
+Enter the details below
+{% endblock %}
+{% block content %}
+<div class="col-12" style="text-align: center;">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <ul class="flashes" style="list-style-type: None;">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{category}}: {{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <form action="/login" name="login" method="post">
+        <input type="text" placeholder="Enter you username" name="username">
+        <input type="password" placeholder="Enter your password" alt="Requires at least 6 characters and one number"
+               name="password">
+        <input type="submit" value="submit">
+    </form>
+</div>
+{% endblock %}
