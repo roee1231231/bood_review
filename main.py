@@ -9,9 +9,9 @@ app.permanent_session_lifetime = timedelta(minutes=5)
 app.config["SQLALCHEMY_DATABASE_URI"] = 'postgres://jcvwmqhjhvpyvf:6341f6696618f90b07a0f08cd3d73738b6ce4a4f837bd89a9e6bb6532ad19ad7@ec2-52-72-221-20.compute-1.amazonaws.com:5432/dd95sk0modea7s'
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db = SQLAlchemy(app)
+# db = SQLAlchemy(app)
 
-# db.init_app(app)
+db.init_app(app)
 
 def check_pass(value):
     count1, count2 = False, False
