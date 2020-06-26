@@ -1,11 +1,13 @@
 from flask import Flask, session, render_template, url_for, request, redirect, flash
 from datetime import timedelta
+import requests
 from models import *
+from sqlalchemy import or_
 
 app = Flask(__name__)
 app.secret_key = "Needs_to_change"
 
-app.permanent_session_lifetime = timedelta(minutes=5)
+app.permanent_session_lifetime = timedelta(hours=3)
 app.config["SQLALCHEMY_DATABASE_URI"] = 'postgres://jcvwmqhjhvpyvf:6341f6696618f90b07a0f08cd3d73738b6ce4a4f837bd89a9e6bb6532ad19ad7@ec2-52-72-221-20.compute-1.amazonaws.com:5432/dd95sk0modea7s'
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -97,26 +99,42 @@ def login():
     else:
         return render_template('home.html', message=f'You are already logged in as {session["user"]}')
 
-# @app.route('/', methods=["POST", "GET"])
-# def home():
-#     if request.method == "POST":
-#         if check_value(request.form['password']):
-#             info['name'] = name_grab(request.form['email'])
-#             info['email'] = request.form['email']
-#             info['password'] = request.form['password']
-#             session['user'] = info['name']
-#         else:
-#             flash("Password must contain a minimum of 6 characters and at least one number!", category='error')
-#             return redirect(url_for('home'))
-#     elif 'user' not in session:
-#         return render_template("login.html")
-#     return render_template("home.html", info=info)
-#
+@app.route('/search', methods=["GET", "POST"])
+def search():
+    if request.method == "GET":
+        if 'user' not in session:
+            return render_template('login.html')
+        else:
+            return render_template('search.html')
+    else:
+        print('line 109')
+        search = request.form.get('search')
+        print(search)
+        # matches = db.execute("SELECT * FROM books WHERE isbn LIKE '%:search%' OR title LIKE '%:search%'"
+        #                      " OR autor LIKE '%:search%' OR year LIKE '%:search%'", {'search': search}).fetchall()
+        # matches = Books.query.filter(or_(Books.isbn.like(f'%{search}%'), Books.title.like(f'%{search}%'),
+        #                                  Books.author.like(f'%{search}%'), Books.year.like(f'%{search}%'))).all()
+        matches = Books.query.filter(Books.title.like(f'%{search}%')).all()
+        print('search successful')
+        if matches:
+            return render_template('search.html', matches=matches)
+        return render_template('search.html', message="Nothing found!")
+
 
 @app.route('/logout')
 def logout():
     session.pop('user', None)
     return redirect(url_for('home'))
+
+@app.route('/book/<info>')
+def book(info):
+    print(info)
+    res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                       params={"key": "JBimoce3BGsKgO2HrNUcQ", "isbns": isbn}).json()
+    print(res)
+    return render_template("book.html", info=info)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title_header %}
+Search Books
+{% endblock %}
+{% block content %}
+    <div class="col-12">
+        <form action="/search" method="post" name="search_form">
+            <input type="text" name="search" placeholder="Search here">
+            <input type="submit" value="submit">
+        </form>
+    </div>
+    {% if matches %}
+        <table id="results_table">
+            <tr>
+                <th>Isbn</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Year</th>
+            </tr>
+            {% for row in matches %}
+                <tr>
+                    <td><a href="/book/{{ row }}">{{ row.isbn }}</a></td>
+                    <td>{{ row.title }}</td>
+                    <td>{{ row.author }}</td>
+                    <td>{{ row.year }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <span style="color: red;">{{ message }}</span>
+    {% endif %}
+{% endblock %}

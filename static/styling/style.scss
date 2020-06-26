@@ -29,3 +29,14 @@ body {
     }
 }
 
+#results_table {
+	margin: 20px;
+	margin-right: auto;
+	margin-left: auto;
+	border: 3px;
+	border-collapse: collapse;
+	th, td{
+		border: 3px solid black;
+		padding: 5px;
+	}
+}

@@ -12,6 +12,8 @@ class User(db.Model):
     last_name = db.Column(db.String, nullable=False)
     birth_date = db.Column(db.String, nullable=True)
 
+
+
 class Books(db.Model):
     __tablename__ = "books"
     isbn = db.Column(db.String, primary_key=True)
