@@ -3,7 +3,7 @@
 {{ info.title }} - {{ info.author }}
 {% endblock %}
 {% block content %}
-    <div class="row">
+    <div class="row" style="text-align: left;">
         <div class="col" style="text-align: left;">
             <h4 style="display: inline;">Year Published: </h4>{{ info.year }}
             <br>
@@ -20,6 +20,19 @@
                 <textarea id="review_text" name="text" placeholder="Write here..." style="height: 170;width: 100%;"></textarea>
             </div>
             <div class="col">
+                <h5>Leave your rating</h5>
+                <label for="one">1</label>
+                <input type="radio" id="one" name="rating" value="1">
+                <label for="two">2</label>
+                <input type="radio" id="two" name="rating" value="2">
+                <label for="three">3</label>
+                <input type="radio" id="three" name="rating" value="3">
+                <label for="four">4</label>
+                <input type="radio" id="four" name="rating" value="4">
+                <label for="five">5</label>
+                <input type="radio" id="five" name="rating" value="5">
+            </div>
+            <div class="col">
                 <input type="submit" value="submit">
             </div>
             {% if message %}
@@ -34,7 +47,12 @@
         {% if reviews %}
             {% for review in reviews %}
                 <ul>
-                    <li><span style="font-weight: bold;">{{ review.title }}</span><br>
+                    <li><span style="font-weight: bold;">{{ review.title }}
+                        {% if review.rating %}
+                            (rating: {{review.rating}})
+                        {% endif %}
+                        </span>
+                        <br>
                         {{ review.text }}</li>
                 </ul>
             {% endfor %}

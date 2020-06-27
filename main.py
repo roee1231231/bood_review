@@ -139,11 +139,15 @@ def logout():
 
 @app.route('/book/<string:ls>', methods=['POST', 'GET'])
 def book(ls):
+    db.create_all()
     lst = ls.split('|')
     creds = {'isbn': lst[0], 'title': lst[1], 'author': lst[2], 'year': lst[3]}
     print(creds)
     book = Books.query.get(lst[0])
+    print(book)
     reviews = book.reviews
+    # TODO: fix book.reviews rating retrieval bug!!!
+    print('fixed it!')
     if request.method == 'GET':
         print('get method')
         res = requests.get("https://www.goodreads.com/book/review_counts.json",
@@ -160,9 +164,9 @@ def book(ls):
         print('post method...')
         title = request.form.get('title')
         text = request.form.get('text')
+        rating = int(request.form.get('rating'))
         if title and text:
-            db.create_all()
-            review = Reviews(username=session['user'], title=title, text=text, isbn=lst[0])
+            review = Reviews(username=session['user'], title=title, text=text, rating=rating, isbn=lst[0])
             db.session.add(review)
             db.session.commit()
         else:
@@ -176,7 +180,14 @@ def api(isbn):
     review_count = len(book.reviews)
     # add score to json
     print(book.title)
-    return jsonify(title=book.title, author=book.author, year=book.year, isbn=book.isbn, review_count=review_count)
+    rating = 0
+    count = 0
+    for review in book.reviews:
+        rating += review.rating
+        count += 1
+    rating = round(rating / count, 2)
+    return jsonify(title=book.title, author=book.author, year=book.year, isbn=book.isbn,
+                   review_count=review_count, rating_average=rating)
 
 if __name__ == '__main__':
     app.run(debug=True)
