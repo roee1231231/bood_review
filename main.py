@@ -1,8 +1,8 @@
-from flask import Flask, session, render_template, url_for, request, redirect, flash
+from flask import Flask, session, render_template, url_for, request, redirect, flash, jsonify
 from datetime import timedelta
 import requests
 from models import *
-from sqlalchemy import or_
+from sqlalchemy import or_, func, cast
 
 app = Flask(__name__)
 app.secret_key = "Needs_to_change"
@@ -114,28 +114,69 @@ def search():
         #                      " OR autor LIKE '%:search%' OR year LIKE '%:search%'", {'search': search}).fetchall()
         # matches = Books.query.filter(or_(Books.isbn.like(f'%{search}%'), Books.title.like(f'%{search}%'),
         #                                  Books.author.like(f'%{search}%'), Books.year.like(f'%{search}%'))).all()
-        matches = Books.query.filter(Books.title.like(f'%{search}%')).all()
+        search = search.casefold()
+        int_search = 123
+        try:
+            int_search = int(search)
+        except:
+            pass
+        matches = Books.query.filter(or_(func.lower(Books.title).like(f'%{search}%'),
+                                         func.lower(Books.author).like(f'%{search}%'),
+                                         func.lower(Books.isbn).like(f'%{search}%'),
+                                         cast(Books.year, db.String).like(f'%{search}%')))
         print('search successful')
+        for m in matches:
+            print(m.title)
         if matches:
+            print(type(matches))
             return render_template('search.html', matches=matches)
         return render_template('search.html', message="Nothing found!")
-
 
 @app.route('/logout')
 def logout():
     session.pop('user', None)
     return redirect(url_for('home'))
 
-@app.route('/book/<info>')
-def book(info):
-    print(info)
-    res = requests.get("https://www.goodreads.com/book/review_counts.json",
-                       params={"key": "JBimoce3BGsKgO2HrNUcQ", "isbns": isbn}).json()
-    print(res)
-    return render_template("book.html", info=info)
+@app.route('/book/<string:ls>', methods=['POST', 'GET'])
+def book(ls):
+    lst = ls.split('|')
+    creds = {'isbn': lst[0], 'title': lst[1], 'author': lst[2], 'year': lst[3]}
+    print(creds)
+    book = Books.query.get(lst[0])
+    reviews = book.reviews
+    if request.method == 'GET':
+        print('get method')
+        res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                           params={"key": "JBimoce3BGsKgO2HrNUcQ", "isbns": creds['isbn']})
+        res = res.json()['books'][0]
+        creds['ratings_count'] = res['ratings_count']
+        creds['average_rating'] = res['average_rating']
+        return render_template("book.html", info=creds, reviews=reviews)
+    else:
+        print(reviews)
+        for review in reviews:
+            if review.username == session['user']:
+                return "You cannot post on the same book twice!"
+        print('post method...')
+        title = request.form.get('title')
+        text = request.form.get('text')
+        if title and text:
+            db.create_all()
+            review = Reviews(username=session['user'], title=title, text=text, isbn=lst[0])
+            db.session.add(review)
+            db.session.commit()
+        else:
+            return render_template('book.html', info=creds, message="Must include title and content!")
+        return render_template('book.html', info=creds, message="Review sent!", reviews=reviews)
 
-
+@app.route('/api/<isbn>')
+def api(isbn):
+    book = Books.query.get(isbn)
+    print(book)
+    review_count = len(book.reviews)
+    # add score to json
+    print(book.title)
+    return jsonify(title=book.title, author=book.author, year=book.year, isbn=book.isbn, review_count=review_count)
 
 if __name__ == '__main__':
     app.run(debug=True)
-    db.create_all()

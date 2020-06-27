@@ -19,7 +19,7 @@ Search Books
             </tr>
             {% for row in matches %}
                 <tr>
-                    <td><a href="/book/{{ row }}">{{ row.isbn }}</a></td>
+                    <td><a href="/book/{{ [row.isbn, row.title, row.author, row.year]|join('|') }}">{{ row.isbn }}</a></td>
                     <td>{{ row.title }}</td>
                     <td>{{ row.author }}</td>
                     <td>{{ row.year }}</td>

@@ -13,10 +13,19 @@ class User(db.Model):
     birth_date = db.Column(db.String, nullable=True)
 
 
-
 class Books(db.Model):
     __tablename__ = "books"
     isbn = db.Column(db.String, primary_key=True)
     title = db.Column(db.String)
     author = db.Column(db.String)
     year = db.Column(db.Integer)
+    reviews = db.relationship("Reviews", backref="books", lazy=True)
+
+
+class Reviews(db.Model):
+    __lablename__ = "reviews"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    username = db.Column(db.String)
+    title = db.Column(db.String)
+    text = db.Column(db.String)
+    isbn = db.Column(db.String, db.ForeignKey("books.isbn"), nullable=False)

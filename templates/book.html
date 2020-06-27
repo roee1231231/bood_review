@@ -1,10 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "base.html" %}
+{% block title_header %}
+{{ info.title }} - {{ info.author }}
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col" style="text-align: left;">
+            <h4 style="display: inline;">Year Published: </h4>{{ info.year }}
+            <br>
+            <h4 style="display: inline;">Rating: </h4>out of {{ info.ratings_count }} the average score is: {{ info.average_rating }}/5
+        </div>
+        <div class="w-100"></div>
+        <form action="#" method="post">
+            <div class="col" style="margin-top: 20px;">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" placeholder="Enter title...">
+            </div>
+            <div class="col" style="margin-top: 20px;">
+                <label for="review_text">Write your review:</label>
+                <textarea id="review_text" name="text" placeholder="Write here..." style="height: 170;width: 100%;"></textarea>
+            </div>
+            <div class="col">
+                <input type="submit" value="submit">
+            </div>
+            {% if message %}
+                <h4 style="color: red;">{{ message }}</h4>
+            {% endif %}
+        </form>
+    </div>
+    <div class="row" style="text-align: left;">
+        <h2>Book reviews:</h2>
+    </div>
+    <div class="row" style="text-align: left;">
+        {% if reviews %}
+            {% for review in reviews %}
+                <ul>
+                    <li><span style="font-weight: bold;">{{ review.title }}</span><br>
+                        {{ review.text }}</li>
+                </ul>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}
